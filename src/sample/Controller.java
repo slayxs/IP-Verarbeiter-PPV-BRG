@@ -8,9 +8,36 @@ import static java.util.Arrays.asList;
 public class Controller {
         private String value;
 
+    public Controller() {
+        value = "0";
+    }
+
+    public Controller(String s) {
+        value = s;
+    }
+
+    public Controller(int i) {
+        value = Integer.toBinaryString(i);
+    }
+
+    public static Boolean isBinary(String s) {
+        for (int i = 0; i < s.length(); i++) {
+            switch (s.charAt(i)) {
+                case '0':
+                    break;
+                case '1':
+                    break;
+                default:
+                    return false;
+            }
+        }
+        return true;
+    }
+
         public void setValue(String s, int b) {
             value = leadingZero(s, b);
         }
+
         public void setValue(int i, int b){
             value = leadingZero(Integer.toBinaryString(i), b);
         }
@@ -47,6 +74,16 @@ public class Controller {
                 e.printStackTrace();
             }
         }
+
+    public String hexToBinary(String hex) {
+        int i = Integer.parseInt(hex, 16);
+        String bin = Integer.toBinaryString(i);
+        return bin;
+    }
+
+    public String getValue() {
+        return value;
+    }
 
     public void setValue(IPv6 header) {
         try {
@@ -85,27 +122,6 @@ public class Controller {
             e.printStackTrace();
         }
     }
-
-    public String hexToBinary(String hex) {
-        int i = Integer.parseInt(hex, 16);
-        String bin = Integer.toBinaryString(i);
-        return bin;
-    }
-
-        public String getValue() {
-            return value;
-        }
-
-        public static Boolean isBinary(String s){
-            for (int i = 0; i < s.length(); i++) {
-                switch (s.charAt(i)){
-                    case '0':   break;
-                    case '1':   break;
-                    default:    return false;
-                }
-            }
-            return true;
-        }
 
         public String leadingZero(String s, int length) {
             while (s.length() < length) {
@@ -178,11 +194,11 @@ public class Controller {
                     ArrayList<Integer> decValues = new ArrayList<Integer>();
                     for (Integer field : fieldLengths) {
                         //parsing the bit segments per substring function to Integer (radix 2)
-                        decValues.add(Integer.parseInt(sHeader.substring(counter, counter+field),2));
+                        decValues.add(Integer.parseInt(sHeader.substring(counter, counter + field), 2));
                         counter += field;
                     }
                     //concatenate the first 5 fields to the output
-                    for (int i = 0; i <5 ; i++) {
+                    for (int i = 0; i < 5; i++) {
                         output += decValues.get(i).toString() + seperator;
                     }
                     //get Flags from binary input
@@ -201,7 +217,7 @@ public class Controller {
                         } else if (i == 13) {
                             ip1 += decValues.get(i).toString();
                             //last concatenation without dot
-                        } else if (i > 13 && (i == decValues.size() -1)) {
+                        } else if (i > 13 && (i == decValues.size() - 1)) {
                             ip2 += decValues.get(i).toString();
                         } else if (i > 13) {
                             ip2 += decValues.get(i).toString() + ctr;
@@ -219,76 +235,61 @@ public class Controller {
         }
 
     public String toHexHeaderString() {
-            char ctr = ':';
-            int value;
-            String output = "";
-            String[] srcip_array;
-            String[] destip_array;
-            String srcip = "";
-            String destip = "";
-            String sHeader = this.getValue();
-            if (sHeader.contains(" ")) {
-                // "\\s" regex
-                String[] bHeaderArray = sHeader.split("\\s");
-                for (int i = 0; i < (bHeaderArray.length); i++) {
-                    if ( i == 6){
-                        srcip_array = bHeaderArray[i].split(":");
-                        for (int x = 0; x < (srcip_array.length); x++) {
-                            if ( x == 7){
-                                srcip += Integer.toString(Integer.parseInt(srcip_array[x],2),16);
-                            }else {
-                                srcip += Integer.toString(Integer.parseInt(srcip_array[x],2),16) + ":";
-                            }
-
-
-                        }
-                    }else if (i == 7)
-                    {
-                        destip_array = bHeaderArray[i].split(":");
-                        for (int x = 0; x < (destip_array.length); x++) {
-                            if ( x == 7){
-                                destip += Integer.toString(Integer.parseInt(destip_array[x],2),16);
-                            }else {
-                                destip += Integer.toString(Integer.parseInt(destip_array[x],2),16) + ":";
-                            }
-
-
+        char ctr = ':';
+        int value;
+        String output = "";
+        String[] srcip_array;
+        String[] destip_array;
+        String srcip = "";
+        String destip = "";
+        String sHeader = this.getValue();
+        if (sHeader.contains(" ")) {
+            // "\\s" regex
+            String[] bHeaderArray = sHeader.split("\\s");
+            for (int i = 0; i < (bHeaderArray.length); i++) {
+                if (i == 6) {
+                    srcip_array = bHeaderArray[i].split(":");
+                    for (int x = 0; x < (srcip_array.length); x++) {
+                        if (x == 7) {
+                            srcip += Integer.toString(Integer.parseInt(srcip_array[x], 2), 16);
+                        } else {
+                            srcip += Integer.toString(Integer.parseInt(srcip_array[x], 2), 16) + ":";
                         }
 
-                    }////
-                    else {
-                        value = Integer.parseInt(bHeaderArray[i], 2);
 
-                        output +=value + "-";
+                    }
+                } else if (i == 7) {
+                    destip_array = bHeaderArray[i].split(":");
+                    for (int x = 0; x < (destip_array.length); x++) {
+                        if (x == 7) {
+                            destip += Integer.toString(Integer.parseInt(destip_array[x], 2), 16);
+                        } else {
+                            destip += Integer.toString(Integer.parseInt(destip_array[x], 2), 16) + ":";
+                        }
 
 
                     }
 
+                } else {
+                    value = Integer.parseInt(bHeaderArray[i], 2);
+
+                    output += value + "-";
 
 
                 }
+
+
             }
+        }
         removeWhitespace(output);
         output = output + srcip + " " + destip;
-            return output;
-            //entered string doesn't contain whitespace
+        return output;
+        //entered string doesn't contain whitespace
         }
 
-
-        private String removeWhitespace(String b) {
-            String s = b.replaceAll("\\s", "");
-            return s;
-        }
-
-
-        public Controller() {
-            value = "0";
-        }
-        public Controller(String s) {
-            value = s;
-        }
-        public Controller(int i){
-            value = Integer.toBinaryString(i);
+    private String removeWhitespace(String b) {
+        String s = b.replaceAll("\\s", "");
+        return s;
         }
     }
 
