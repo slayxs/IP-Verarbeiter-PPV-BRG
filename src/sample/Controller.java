@@ -255,7 +255,7 @@ public class Controller {
 
                         }
 
-                    }//
+                    }////
                     else {
                         value = Integer.parseInt(bHeaderArray[i], 2);
 
